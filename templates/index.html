@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% block title %}CRUD App | Domingo, Royvil DC. BSIT3A{% endblock %}
+{% block header %}
+CRUD Names | Domingo, Royvil DC. BSIT3A
+{% endblock %}
+
+{% block content %}
+
+
+    <form
+        action="/index"
+        method="POST"
+        class="add-form"
+        id="nameForm"
+    >
+        <div class="field-group">
+            <label for="name">Name</label>
+
+            <input
+                type="text"
+                name="name"
+                id="name"
+                placeholder="Enter a person's name..."
+                maxlength="100"
+                autocomplete="off"
+                required
+            >
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            + Add Name
+        </button>
+    </form>
+
+
+    <section class="table-card" aria-labelledby="namesHeading">
+
+        <div class="table-toolbar">
+            <div>
+                <h2 id="namesHeading">Saved Names</h2>
+                <p class="table-description">
+                    View, search, edit, or delete your records.
+                </p>
+            </div>
+
+            <input
+                type="search"
+                id="nameSearch"
+                class="search-input"
+                placeholder="Search names..."
+                aria-label="Search saved names"
+            >
+        </div>
+
+        <div class="table-wrap">
+            <table id="namesTable">
+                <thead>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col" colspan="2" class="actions-heading">
+                            Actions
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% if names %}
+                        {% for name in names %}
+                
+                            {% if edit_index is not none and edit_index == loop.index0 %}
+                
+                                <!-- Edit mode: show an input on the same page -->
+                                <tr class="edit-row">
+                                    <td colspan="3">
+                                        <form
+                                            action="{{ url_for('update', index=loop.index0) }}"
+                                            method="POST"
+                                            class="inline-edit-form"
+                                            id="editForm">
+                                            <div class="field-group">
+                                                <label for="edit-name-{{ loop.index0 }}">
+                                                    Edit Name
+                                                </label>
+                
+                                                <input
+                                                    type="text"
+                                                    name="name"
+                                                    id="edit-name-{{ loop.index0 }}"
+                                                    value="{{ name }}"
+                                                    maxlength="100"
+                                                    required
+                                                    autofocus
+                                                >
+                                            </div>
+                
+                                            <button type="submit" class="btn btn-primary">
+                                                Save
+                                            </button>
+                
+                                            <a href="{{ url_for('index') }}" class="btn btn-secondary">
+                                                Cancel
+                                            </a>
+                                        </form>
+                                    </td>
+                                </tr>
+                
+                            {% else %}
+                
+                                <!-- Normal mode: display the saved name -->
+                                <tr class="name-row">
+                                    <td class="name-cell">
+                                        {{ name }}
+                                    </td>
+                
+                                    <td class="action-cell">
+                                        <a href="{{ url_for('update', index=loop.index0) }}" class="btn btn-secondary">
+                                            Edit
+                                        </a>
+                                    </td>
+                
+                                    <td class="action-cell">
+                                        <form
+                                            action="{{ url_for('delete', index=loop.index0) }}"
+                                            method="POST"
+                                            class="inline-form"
+                                            data-confirm-delete>
+                                            <button type="submit" class="btn btn-danger">
+                                                Delete
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                
+                            {% endif %}
+                
+                        {% endfor %}
+                
+                    {% else %}
+                
+                        <tr id="emptyNames">
+                            <td colspan="3" class="empty-state">
+                                <strong>No names yet</strong>
+                                Add your first name using the form above.
+                            </td>
+                        </tr>
+                
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+        <p
+            id="noSearchResults"
+            class="empty-state"
+            hidden
+            role="status"
+        >
+            No matching names found. Try another search.
+        </p>
+
+    </section>
+
+{% endblock %}
